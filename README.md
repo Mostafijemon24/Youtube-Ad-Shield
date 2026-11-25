@@ -1,74 +1,74 @@
 # Youtube Ad Shield
 
-Chrome extension (Manifest V3) that keeps YouTube playback clear of video ads, banners, overlays, and the “turn off your ad blocker” dialog. Chrome 111 or newer.
+Chrome extension (Manifest V3) that keeps YouTube playback clear of video ads, banners, overlays, and the “turn off your ad blocker” dialog. Requires Chrome 111 or newer.
 
-পপআপ থেকে শিল্ড চালু বা বন্ধ করা যায়, আর কতগুলো অ্যাড আটকেছে সেই হিসাবও সেখানেই থাকে।
+The popup turns the shield on or off and shows how many ads have been blocked.
 
-## যা আটকায়
+## What it blocks
 
-- ভিডিওর আগে, মাঝে ও পরে চলা video ad
-- হোম, সার্চ ও ওয়াচ পেজের banner, masthead ও promoted video
-- প্লেয়ারের ওপর ভাসমান overlay
-- “Ad blockers are not allowed on YouTube” nag dialog
+- Video ads before, during, and after a video
+- Banners, mastheads, and promoted videos on Home, Search, and Watch
+- Overlays sitting on top of the player
+- The “Ad blockers are not allowed on YouTube” nag dialog
 
-ক্রিয়েটরের নিজের স্পন্সর সেগমেন্ট (ভিডিওর ভিতরের রিড-আউট) আটকায় না। ওটা মূল ভিডিওর অংশ।
+Creator sponsor segments stay in the video. They are part of the video itself.
 
-## তিনটা লেয়ার
+## Three layers
 
-| লেয়ার | ফাইল | কাজ |
+| Layer | File | What it does |
 | --- | --- | --- |
-| Network | `rules.json` | `declarativeNetRequest` দিয়ে doubleclick, googlesyndication, `/pagead/`, `/api/stats/ads`-এর মতো অ্যাড এন্ডপয়েন্ট ড্রপ করে |
-| Payload | `inject.js` | পেজ লোডের আগেই `MAIN` world-এ `JSON.parse`, `fetch` ও `XHR` হুক করে প্লেয়ার রেসপন্স থেকে `adPlacements`, `adSlots`, `playerAds` সরিয়ে দেয় |
-| Page | `content.js`, `hide.css` | বাকি ব্যানার ও ওভারলে সরায়, টিকে যাওয়া video ad শেষে পাঠায়, nag dialog বন্ধ করে |
+| Network | `rules.json` | Drops ad endpoints such as doubleclick, googlesyndication, `/pagead/`, and `/api/stats/ads` with `declarativeNetRequest` |
+| Payload | `inject.js` | Hooks `JSON.parse`, `fetch`, and `XHR` in the `MAIN` world before the page boots, and removes `adPlacements`, `adSlots`, and `playerAds` from the player response |
+| Page | `content.js`, `hide.css` | Removes leftover banners and overlays, sends a surviving video ad to its end, and closes the nag dialog |
 
-Payload লেয়ারটা মূল কাজ। অ্যাডের নির্দেশনা রেসপন্স থেকেই কেটে ফেলা হয়, তাই প্লেয়ার অ্যাডের কথা জানতেই পারে না।
+The payload layer does the real work. Ad instructions are cut out of the response, so the player never learns an ad was there.
 
-পপআপের টগল বন্ধ করলে নেটওয়ার্ক রুলসেটও বন্ধ হয়। ব্যাজে ব্লক করা অ্যাডের সংখ্যা দেখায় (`999+` পর্যন্ত)। **Reset count** কাউন্টার শূন্য করে।
+Turning the popup toggle off also disables the network ruleset. The toolbar badge shows the blocked count, up to `999+`. **Reset count** sets the counter back to zero.
 
-## ইনস্টল
+## Install
 
-Load unpacked দিয়ে ইনস্টল হয়।
+Load the folder unpacked.
 
-1. Chrome, Edge বা Brave-এ `chrome://extensions` খুলুন।
-2. **Developer mode** চালু করুন।
-3. **Load unpacked** চেপে এই ফোল্ডারটা সিলেক্ট করুন।
-4. YouTube খোলা থাকলে পেজ hard reload দিন (`Ctrl+Shift+R` / `Cmd+Shift+R`)।
+1. Open `chrome://extensions` in Chrome, Edge, or Brave.
+2. Turn on **Developer mode**.
+3. Click **Load unpacked** and select this folder.
+4. If YouTube is already open, hard-reload the page (`Ctrl+Shift+R` / `Cmd+Shift+R`).
 
-## ফাইল
+## Files
 
 ```
 manifest.json    extension manifest
-background.js    অন/অফ, কাউন্টার, ব্যাজ
-rules.json       নেটওয়ার্ক ব্লক রুল
-inject.js        প্লেয়ার রেসপন্স থেকে অ্যাড কেটে ফেলা
-content.js       DOM পরিষ্কার, video ad, nag dialog
-hide.css         অ্যাড স্লট যাতে ফ্ল্যাশ না করে
-popup.html       পপআপ
+background.js    on/off switch, counter, badge
+rules.json       network block rules
+inject.js        strips ads from the player response
+content.js       DOM cleanup, video ads, nag dialog
+hide.css         keeps ad slots from flashing on screen
+popup.html       popup
 popup.css
 popup.js
 icons/           16, 48, 128
 ```
 
-## YouTube বদলালে
+## When YouTube changes
 
-YouTube মাঝে মাঝে renderer-এর ট্যাগের নাম বদলায়। কোনো অ্যাড আবার দেখা দিলে:
+YouTube renames renderer tags from time to time. When an ad shows up again:
 
-1. এলিমেন্টে Inspect করে ট্যাগের নাম নিন, যেমন `ytd-something-renderer`।
-2. নামটা `content.js`-এর `REMOVE` অ্যারে এবং `hide.css`-এ যোগ করুন।
-3. প্লেয়ার রেসপন্সে নতুন অ্যাড কী থাকলে `inject.js`-এর `AD_KEYS`-এ যোগ করুন।
+1. Inspect the element and copy the tag name, for example `ytd-something-renderer`.
+2. Add it to the `REMOVE` array in `content.js` and to `hide.css`.
+3. If the player response has a new ad key, add it to `AD_KEYS` in `inject.js`.
 
-কনসোলে চেক:
+Check in the console:
 
 ```js
 JSON.parse(JSON.stringify(window.ytInitialPlayerResponse)).adPlacements
 ```
 
-`undefined` হলে payload লেয়ার সেই রেসপন্স পরিষ্কার করতে পেরেছে।
+`undefined` means the payload layer cleaned that response.
 
-## সীমা
+## Limits
 
-YouTube ডিটেকশন বদলাতে থাকে। কোনো ব্লকারই স্থায়ী গ্যারান্টি দেয় না — সময়ে সময়ে সিলেক্টর আপডেট লাগে। স্টোরে পাবলিশ করলে রিভিউতে আটকে যেতে পারে; ব্যক্তিগত ব্যবহারে unpacked load-ই নিরাপদ পথ।
+YouTube keeps changing how it detects blockers, so selectors need an update now and then. For personal use, load the folder unpacked. A Chrome Web Store submission can sit in review.
 
-## লাইসেন্স
+## License
 
-ব্যক্তিগত ব্যবহার। ইচ্ছেমতো বদলাতে পারেন।
+Personal use. Change it however you like.
