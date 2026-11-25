@@ -1,0 +1,49 @@
+/* Applied at document_start so ad slots never get a chance to flash on screen. */
+
+#player-ads,
+#masthead-ad,
+#offer-module,
+ytd-ad-slot-renderer,
+ytd-display-ad-renderer,
+ytd-promoted-sparkles-web-renderer,
+ytd-promoted-sparkles-text-search-renderer,
+ytd-promoted-video-renderer,
+ytd-compact-promoted-video-renderer,
+ytd-in-feed-ad-layout-renderer,
+ytd-banner-promo-renderer,
+ytd-banner-promo-renderer-background,
+ytd-statement-banner-renderer,
+ytd-video-masthead-ad-v3-renderer,
+ytd-primetime-promo-renderer,
+ytd-companion-slot-renderer,
+ytd-action-companion-ad-renderer,
+ytd-enforcement-message-view-model,
+ytm-promoted-video-renderer,
+ytm-companion-ad-renderer,
+ytm-promoted-sparkles-web-renderer,
+.ytp-ad-overlay-container,
+.ytp-ad-overlay-slot,
+.ytp-ad-progress-list,
+.ytp-suggested-action,
+.ytd-companion-slot-renderer,
+ytd-rich-item-renderer:has(ytd-ad-slot-renderer),
+ytd-rich-item-renderer:has(ytd-in-feed-ad-layout-renderer),
+ytd-rich-section-renderer:has(ytd-statement-banner-renderer),
+ytd-engagement-panel-section-list-renderer[target-id="engagement-panel-ads"] {
+  display: none !important;
+}
+
+/* The nag dialog dims the page and locks scrolling — undo both. */
+tp-yt-iron-overlay-backdrop {
+  display: none !important;
+  opacity: 0 !important;
+}
+
+body[no-y-overflow] {
+  overflow-y: auto !important;
+}
+
+/* Reclaim the empty gap a removed sidebar ad leaves behind. */
+#secondary #player-ads + ytd-watch-next-secondary-results-renderer {
+  margin-top: 0 !important;
+}

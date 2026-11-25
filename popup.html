@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="panel">
+
+    <header class="bar">
+      <span class="mark" aria-hidden="true"></span>
+      <span class="wordmark">YT Ad&nbsp;Shield</span>
+      <label class="switch">
+        <input type="checkbox" id="toggle" checked>
+        <span class="track"><span class="knob"></span></span>
+      </label>
+    </header>
+
+    <section class="readout">
+      <div class="count" id="count">0</div>
+      <div class="count-label">ads blocked</div>
+      <div class="ticks" id="ticks" aria-hidden="true"></div>
+    </section>
+
+    <section class="layers">
+      <div class="layer">
+        <span class="dot" data-layer="net"></span>
+        <span class="layer-name">Network</span>
+        <span class="layer-note">ad servers refused</span>
+      </div>
+      <div class="layer">
+        <span class="dot" data-layer="payload"></span>
+        <span class="layer-name">Payload</span>
+        <span class="layer-note">ad breaks cut from player</span>
+      </div>
+      <div class="layer">
+        <span class="dot" data-layer="dom"></span>
+        <span class="layer-name">Page</span>
+        <span class="layer-note">banners &amp; nag dialog</span>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <span class="state" id="state">Shield on</span>
+      <button id="reset" class="reset">Reset count</button>
+    </footer>
+
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
